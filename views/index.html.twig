@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>git-search</title>
+</head>
+<body>
+
+<form action="">
+    <input name="q" value="{{ query }}">
+    <input type="submit">
+</form>
+
+<div class="results">
+    {% include "results.html.twig" %}
+</div>
+
+<script>
+    var showResults = function (html) {
+        var container = document.querySelector('.results')
+        container.innerHTML = html;
+    };
+
+    var input = document.querySelector('input[name=q]');
+    input.addEventListener('keyup', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                showResults(xhr.responseText);
+            }
+        };
+        xhr.open('GET', input.form.action.replace(/\?.*$/, '')+'?q='+escape(this.value));
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+    });
+</script>
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 {
     "require": {
         "silex/silex": "1.0.*",
+        "symfony/finder": "2.1.*",
+        "twig/twig": "1.8.*",
         "ruflin/elastica": "dev-master"
     }
 }

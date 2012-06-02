@@ -1,0 +1,48 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Finder\Finder;
+
+$elasticaClient = new Elastica_Client();
+
+$elasticaIndex = $elasticaClient->getIndex('git-search');
+$elasticaIndex->create(array(), true);
+
+$elasticaType = $elasticaIndex->getType('file');
+
+$repos = json_decode(file_get_contents(__DIR__.'/../repos.json'), true);
+
+foreach ($repos as $repo) {
+    $tmpDir = __DIR__.'/../tmp';
+    $repoDirName = preg_replace('{^\w+://}', '', $repo);
+    $repoDir = $tmpDir.'/'.$repoDirName;
+
+    if (file_exists($repoDir)) {
+        exec(sprintf('cd %s && git pull', $repoDir));
+    } else {
+        exec(sprintf('cd %s && mkdir -p %s && git clone %s %s', $tmpDir, $repoDirName, $repo, $repoDirName));
+    }
+
+    $files = Finder::create()
+        ->ignoreVCS(true)
+        ->files()
+        ->in($repoDir);
+
+    foreach ($files as $filename) {
+        $relativeName = substr($filename, strlen($repoDir)+1);
+        $id = sha1_file($filename);
+        $file = array(
+            'id' => $id,
+            'filename' => $relativeName,
+            'data' => file_get_contents($filename),
+            'repo' => $repoDirName,
+        );
+        $fileDocument = new Elastica_Document($id, $file);
+        $elasticaType->addDocument($fileDocument);
+    }
+
+
+    $elasticaType->getIndex()->refresh();
+}

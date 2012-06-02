@@ -1,0 +1,7 @@
+[
+    "https://github.com/react-php/react",
+    "https://github.com/react-php/zmq",
+    "https://github.com/cboden/Ratchet",
+    "https://github.com/igorw/evenement",
+    "https://github.com/nrk/predis-async"
+]

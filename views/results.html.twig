@@ -1,0 +1,9 @@
+<ul>
+{% for result in results %}
+    <li>
+        <h2>{{ result.data.filename }} <small><em>({{ result.data.repo }})</em></small></h2>
+
+        <code><pre>{{ result.data.data }}</pre></code>
+    </li>
+{% endfor %}
+</ul>
