@@ -19,8 +19,12 @@ $app['elastica'] = $app->share(function () {
 $app->get('/', function (Request $request) use ($app) {
     $query = $request->query->get('q');
 
-    $index = $app['elastica']->getIndex('git-search');
-    $results = $index->search($query);
+    if ($query) {
+        $index = $app['elastica']->getIndex('git-search');
+        $results = $index->search($query);
+    } else {
+        $results = array();
+    }
 
     $view = 'index.html.twig';
     if ($request->isXmlHttpRequest()) {
